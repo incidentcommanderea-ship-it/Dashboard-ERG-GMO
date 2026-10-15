@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Daily Report — Emergency Response Group Site GMO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root{--bg:#0a0a0a;--card:#141414;--line:#2b2b2b;--ink:#ffffff;--mut:#a3a3a3;--acc:#e10600;--accink:#ffffff;--ok:#ffffff;--okbg:#262626;--warn:#a3a3a3;--warnbg:#242424;--bad:#ff3b3b;--badbg:#3a1414;--nd:#7f7f7f;--ndbg:#1d1d1d;--track:#2b2b2b;color-scheme:dark}
+:root[data-theme="light"]{--bg:#f5f5f5;--card:#ffffff;--line:#e3e3e3;--ink:#0d0d0d;--mut:#6b6b6b;--acc:#e10600;--accink:#ffffff;--ok:#0d0d0d;--okbg:#ededed;--warn:#6b6b6b;--warnbg:#ececec;--bad:#e10600;--badbg:#fde7e6;--nd:#8a8a8a;--ndbg:#f2f2f2;--track:#e8e8e8;color-scheme:light}
+*{box-sizing:border-box}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 14px/1.5 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+.mono,.num-big,td.mono{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.wrap{max-width:1180px;margin:0 auto;padding:24px 18px 40px}
+.hdr{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;flex-wrap:wrap;padding-bottom:16px;border-bottom:3px solid var(--ink)}
+.kicker{font:600 11px/1 Inter,system-ui,sans-serif;letter-spacing:.16em;color:var(--acc);text-transform:uppercase}
+h1{margin:8px 0 4px;font:700 28px/1.15 Inter,system-ui,sans-serif;letter-spacing:-.01em}
+.sub{color:var(--mut);font-size:14px}
+.meta{text-align:right;display:flex;gap:14px;align-items:flex-end}
+.tgl{font:600 15px/1.3 Inter,system-ui,sans-serif;margin-bottom:2px}
+.jam{font:400 12px/1.4 "IBM Plex Mono",monospace;color:var(--mut)}
+.qr{width:112px;text-align:center;font-size:11px;color:var(--mut)}
+.qr .box{background:#fff;padding:6px;border-radius:8px;display:inline-block;border:1px solid var(--line)}
+.qr .box>div{width:88px;height:88px}
+.qr .box img,.qr .box canvas{width:88px!important;height:88px!important;display:block}
+.qr p{margin:6px 0 0;line-height:1.3}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:20px}
+.grp{grid-column:1/-1;font:600 11px/1 Inter,system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);margin-top:8px;padding-left:2px}
+.span2{grid-column:span 2}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;min-width:0}
+.ch{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.num{flex:0 0 auto;width:28px;height:28px;border-radius:7px;background:var(--acc);color:var(--accink);font:600 13px/28px "IBM Plex Mono",monospace;text-align:center}
+.ch h2{margin:0;font:600 16px/1.3 Inter,system-ui,sans-serif}
+.note{font-size:12px;color:var(--mut);margin:10px 0 0}
+.nd{color:var(--nd);font-style:italic}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.kpi{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--bg)}
+.kpi .lbl{font-size:12px;color:var(--mut);line-height:1.3;min-height:32px}
+.kpi .v{font:600 30px/1.1 "IBM Plex Mono",monospace;margin:6px 0 4px;letter-spacing:-.02em}
+.kpi .s{font-size:12px;color:var(--mut);line-height:1.4}
+.t{border-radius:10px}
+.tw.scroll{max-height:480px;overflow:auto}
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:10px;margin-top:10px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{position:sticky;top:0;background:var(--bg);text-align:left;font:600 11px/1.3 Inter,system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);padding:9px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+td.r,th.r{text-align:right}
+td.w{min-width:200px}
+.pill{display:inline-block;padding:3px 8px;border-radius:99px;font:600 11px/1.3 Inter,system-ui,sans-serif;white-space:nowrap}
+.p-ok{background:var(--okbg);color:var(--ok)}
+.p-warn{background:var(--warnbg);color:var(--warn)}
+.p-bad{background:var(--badbg);color:var(--bad)}
+.p-nd{background:var(--ndbg);color:var(--nd)}
+.bar-row{display:grid;grid-template-columns:minmax(0,1fr) 64px;gap:4px 12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.bar-row:last-child{border-bottom:0}
+.bar-row .n{font-weight:600;font-size:13px}
+.bar-row .d{font-size:12px;color:var(--mut)}
+.bar-row .pv{font:600 15px/1 "IBM Plex Mono",monospace;text-align:right}
+.track{grid-column:1/-1;height:10px;border-radius:99px;background:var(--track);overflow:hidden}
+.track i{display:block;height:100%;border-radius:99px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--mut);margin-top:12px}
+.legend span:before{content:"";display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.lg-ok:before{background:var(--ok)}.lg-warn:before{background:var(--warn)}.lg-bad:before{background:var(--bad)}.lg-nd:before{background:var(--nd)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.chip{border:1px solid var(--line);border-radius:10px;padding:6px 10px;font-size:12px;background:var(--bg)}
+.chip b{font:600 12px "IBM Plex Mono",monospace}
+.block{border:1px dashed var(--line);border-radius:12px;padding:14px;color:var(--mut);font-size:13px;margin-top:10px}
+.lbl-small{font-size:12px;color:var(--mut);margin:14px 0 2px;font-weight:600}
+.foot{margin-top:22px;font-size:12px;color:var(--mut);border-top:1px solid var(--line);padding-top:12px}
+.btnrow{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:8px}
+.theme-btn:disabled{opacity:.5;cursor:default}
+.theme-btn{font:600 12px Inter,system-ui,sans-serif;margin-top:8px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--ink);cursor:pointer}
+@media (max-width:820px){
+  .grid{grid-template-columns:1fr}
+  .span2{grid-column:auto}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .meta{text-align:left;width:100%;justify-content:space-between}
+  h1{font-size:23px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hdr">
+    <div>
+      <div class="kicker">Emergency Response Group</div>
+      <h1>Daily Report — ERG Site GMO</h1>
+      <div class="sub">Emergency Response &amp; Safety Service Departemen</div>
+    </div>
+    <div class="meta">
+      <div>
+        <div class="tgl" id="tgl"></div>
+        <div class="jam" id="jam"></div>
+        <div class="btnrow"><button class="theme-btn" id="themeBtn" type="button" onclick="toggleTheme()">☀ Mode terang</button><button class="theme-btn" id="slideBtn" type="button" onclick="downloadSlide()" disabled>⬇ Unduh slide PNG</button></div>
+      </div>
+      <div class="qr">
+        <div class="box"><div id="qrcode"></div></div>
+        <p>Scan untuk membuka di HP</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="grid" id="grid"></main>
+
+  <footer class="foot" id="foot"></footer>
+</div>
+
+<script>
+let D = null;
+const BITLY_URL = "https://bit.ly/GANTI-DENGAN-LINK-ANDA";
+const NA = "Data belum tersedia";
+
+const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const val = v => (v === null || v === undefined || v === "") ? `<span class="nd">${NA}</span>` : esc(v);
+const fmt = (n, d = 1) => n == null ? "–" : Number(n).toLocaleString("id-ID", {maximumFractionDigits: d});
+const pct = (n, d = 1) => n == null ? "–" : fmt(n, d) + "%";
+const tone = p => p == null ? "nd" : p >= 90 ? "ok" : p >= 70 ? "warn" : "bad";
+const pill = (text, t) => `<span class="pill p-${t}">${esc(text)}</span>`;
+const statusPill = s => {
+  if (!s) return `<span class="nd">${NA}</span>`;
+  const t = {Good:"ok", "Not Good":"bad", Replacement:"bad", Maintenance:"warn", Scrap:"bad", CLOSE:"ok", OPEN:"bad", NA:"nd", "Terlaksana":"ok", "Tidak Terlaksana":"bad", "Terlaksana dengan Catatan":"warn", "Close":"ok", "Open":"bad", "On Going":"warn"}[s] || "nd";
+  return pill(s, t);
+};
+const card = (n, title, body, cls = "") => `<section class="card ${cls}"><div class="ch"><span class="num">${n}</span><h2>${esc(title)}</h2></div>${body}</section>`;
+const grp = t => `<div class="grp">${esc(t)}</div>`;
+const kpi = (lbl, v, s) => `<div class="kpi"><div class="lbl">${esc(lbl)}</div><div class="v">${v}</div><div class="s">${s}</div></div>`;
+
+function render(){
+/* ---------- 1. Ringkasan ---------- */
+const dop = D.dop, eq = D.eq;
+const toneEq = tone(eq.pct);
+const unitPct = (eq.unitGood / eq.units.length) * 100;
+const c1 = `
+<div class="kpis">
+  ${kpi("DOP hari ini", fmt(dop.total,0), `${dop.terlaksana} terlaksana · ${dop.catatan ? dop.catatan + " dengan catatan · " : ""}${dop.tidak} tidak terlaksana · ${dop.belum} belum diverifikasi`)}
+  ${kpi("DOP " + esc(D.tanggalPrev.split(", ")[1]) + " berstatus tidak terlaksana", fmt(dop.prevTidak.length,0), `dari ${dop.prevTotal} kegiatan DOP hari sebelumnya`)}
+  ${kpi("Kesiapan peralatan", `<span style="color:var(--${toneEq==="ok"?"ok":toneEq==="warn"?"warn":toneEq==="bad"?"bad":"nd"})">${pct(eq.pct)}</span>`, `${fmt(eq.good,0)} Good dari ${fmt(eq.good+eq.ng,0)} item ber-data · ${fmt(eq.nodata,0)} belum ada data`)}
+  ${kpi("Kesiapan unit", `<span style="color:var(--${tone(unitPct)==="ok"?"ok":tone(unitPct)==="warn"?"warn":"bad"})">${pct(unitPct,0)}</span>`, `${eq.unitGood} dari ${eq.units.length} unit Good (Utara & Selatan)`)}
+</div>
+<div class="lbl-small">DOP ${esc(D.tanggalPrev)} yang tidak terlaksana</div>
+${dop.prevTidak.length ? `<div class="tw"><table><thead><tr><th>Station</th><th>Kegiatan</th><th>Alasan</th></tr></thead><tbody>
+${dop.prevTidak.map(x => `<tr><td>${esc(x.station)}</td><td class="w">${esc(x.kegiatan)}</td><td class="w">${val(x.alasan)}</td></tr>`).join("")}
+</tbody></table></div>` : `<div class="block">Tidak ada kegiatan DOP yang tidak terlaksana.</div>`}
+${D.p2h.length ? `<p class="note">Ada catatan P2H pada ${esc(D.tanggalPrev)}. Periksa apakah sesuai dengan status unit di sheet Proficiency.</p>` : ""}`;
+
+/* ---------- 2. Safety device ---------- */
+const sd = D.sd;
+const sdRows = sd.items.map(i => `<tr>
+  <td><b>${esc(i.jenis)}</b></td>
+  <td class="w">${val(i.areas)}</td>
+  <td class="r mono">${fmt(i.n,0)} <span class="nd">(${pct(i.pct)})</span></td>
+  <td class="w">Tanpa temuan ${fmt(i.tanpa,0)} · Ada temuan ${fmt(i.ada,0)} · Tidak tersedia ${fmt(i.n-i.tanpa-i.ada,0)}</td>
+  <td class="w">Close ${fmt(i.close,0)} · Open ${fmt(i.open,0)} · NA ${fmt(i.na,0)}</td>
+  <td class="r">${pill(pct(i.siap,0), tone(i.siap))}</td>
+</tr>`).join("");
+const c2 = `
+<div class="kpis">
+  ${kpi("Total safety device", fmt(sd.total,0), "seluruh unit inspeksi")}
+  ${kpi("Status Close", `<span style="color:var(--ok)">${fmt(sd.close,0)}</span>`, pct(sd.close/sd.total*100))}
+  ${kpi("Status Open", `<span style="color:var(--bad)">${fmt(sd.open,0)}</span>`, pct(sd.open/sd.total*100))}
+  ${kpi("Status NA", `<span style="color:var(--nd)">${fmt(sd.na,0)}</span>`, pct(sd.na/sd.total*100))}
+</div>
+<div class="tw"><table><thead><tr><th>Jenis</th><th>Area</th><th class="r">Jumlah (% dari total)</th><th>Status temuan</th><th>Status safety device</th><th class="r">% siap</th></tr></thead>
+<tbody>${sdRows}</tbody></table></div>
+<p class="note">% siap = jumlah status Close dibagi jumlah unit pada jenis tersebut. Status NA dihitung sebagai belum siap.</p>`;
+
+/* ---------- 3. Kesiapan peralatan & unit ---------- */
+const barRow = c => {
+  const t = tone(c.pct);
+  const color = t === "ok" ? "var(--ok)" : t === "warn" ? "var(--warn)" : t === "bad" ? "var(--bad)" : "var(--nd)";
+  const label = c.pct == null ? "–" : pct(c.pct, 0);
+  const detail = c.pct == null ? NA : `Siap ${fmt(c.good,0)} · Tidak siap ${fmt(c.ng,0)} · Belum ada data ${fmt(c.nd,0)}`;
+  return `<div class="bar-row">
+    <div><div class="n">${esc(c.name)}</div><div class="d">${detail}</div></div>
+    <div class="pv" style="color:${color}">${label}</div>
+    <div class="track"><i style="width:${c.pct ?? 0}%;background:${color}"></i></div>
+  </div>`;
+};
+const unitChips = eq.units.map(u => `<div class="chip">${esc(u.name)} <b>${esc(u.reg||"")}</b> · ${esc(u.station)} · ${statusPill(u.status)}</div>`).join("");
+const c3 = `
+<div class="lbl-small">Unit rescue &amp; sarana</div>
+<div class="chips">${unitChips}</div>
+<div class="lbl-small">Kondisi kesiapan per kategori alat</div>
+${D.cats.map(barRow).join("")}
+<div class="legend"><span class="lg-ok">Baik ≥ 90%</span><span class="lg-warn">Sedang 70–89%</span><span class="lg-bad">Kritis &lt; 70%</span><span class="lg-nd">Abu: belum ada data</span></div>
+<p class="note">Persentase dihitung dari item yang sudah memiliki status kesiapan (Good / Not Good). Item tanpa status kesiapan tidak dihitung dan ditampilkan sebagai "Belum ada data".</p>`;
+
+/* ---------- 4. Tidak siap ---------- */
+const c4 = `
+<div class="tw"><table><thead><tr><th>Station</th><th>Kategori alat</th><th>Jenis alat</th><th>Keterangan</th><th>Status alat</th></tr></thead><tbody>
+${D.tidak.map(x => `<tr>
+  <td>${esc(x.station)}</td>
+  <td>${esc(x.kategori)}</td>
+  <td class="w"><b>${esc(x.jenis)}</b></td>
+  <td class="w">${val(x.ket)}</td>
+  <td>${x.status ? statusPill(x.status) : `<span class="nd">${NA}</span>`}</td>
+</tr>`).join("")}
+</tbody></table></div>
+<p class="note">Daftar memuat item dengan kesiapan Not Good, status alat terisi, atau sedang dipinjam. Jumlah: ${fmt(D.tidak.length,0)} item.</p>`;
+
+/* ---------- 5. Volunteers ---------- */
+const v = D.vol, vm = D.volMerge;
+const c5 = `
+<div class="kpis">
+  ${kpi("Volunteer terdaftar", fmt(v.total,0), "daftar volunteer 2026")}
+  ${kpi("Sudah certified", `<span style="color:var(--ok)">${fmt(v.certified.length,0)}</span>`, "tanda Certified di daftar volunteer")}
+  ${kpi("Sudah ikut pelatihan, belum certified", `<span style="color:var(--warn)">${fmt(vm.list.length,0)}</span>`, `dicocokkan dengan data kompetensi (${fmt(vm.matched,0)} volunteer ditemukan)`)}
+</div>
+<div class="lbl-small">Volunteer yang sudah ikut pelatihan tetapi belum certified</div>
+${vm.list.length ? `<div class="tw"><table><thead><tr><th>Nama</th><th>Perusahaan</th><th>Pelatihan tercatat</th></tr></thead><tbody>
+${vm.list.map(x => `<tr><td><b>${esc(x.nama)}</b></td><td>${esc(x.perusahaan)}</td><td class="w">${x.pelatihan.map(esc).join(", ")}</td></tr>`).join("")}
+</tbody></table></div>` : `<div class="block">${NA}</div>`}
+<p class="note">Pencocokan memakai nama lengkap karena kolom NPK/SID di daftar volunteer tidak selalu sama dengan SID di data kompetensi. ${fmt(vm.noMatch,0)} volunteer tidak memiliki nama yang sama di data kompetensi, sehingga status pelatihannya belum dapat ditentukan.</p>`;
+
+/* ---------- 6. Drill ---------- */
+const dr = D.drill;
+const octPct = dr.octPlan ? dr.octDone / dr.octPlan * 100 : null;
+const yrPct = dr.total ? dr.done / dr.total * 100 : null;
+const drillRows = dr.rows.map(r => `<tr>
+  <td>${esc(r.perusahaan)}<div class="nd" style="font-size:12px">${esc(r.zona||"")}</div></td>
+  <td class="w">${esc(r.program)}<div class="nd" style="font-size:12px">${esc(r.jenis)} · ${esc(r.dept||"")}</div></td>
+  <td>${val(r.rencana)}</td>
+  <td>${r.aktual ? esc(r.aktual) : `<span class="nd">Dijadwalkan</span>`}</td>
+  <td>${statusPill(r.status)}</td>
+</tr>`).join("");
+const c6 = `
+<div class="kpis">
+  ${kpi("Drill sudah dilaksanakan", `${fmt(dr.done,0)}<span style="font-size:14px;color:var(--mut)"> / ${fmt(dr.total,0)}</span>`, `Dijadwalkan: ${fmt(dr.total-dr.done,0)} · capaian tahun ${pct(yrPct,0)}`)}
+  ${kpi("Target bulanan (" + D.bulan + ")", `<span style="color:var(--${tone(octPct)==="ok"?"ok":tone(octPct)==="warn"?"warn":"bad"})">${pct(octPct,0)}</span>`, `${fmt(dr.octDone,0)} dari ${fmt(dr.octPlan,0)} drill terencana bulan ${D.bulan}`)}
+</div>
+<div class="tw"><table><thead><tr><th>Perusahaan</th><th>Program</th><th>Rencana</th><th>Aktual</th><th>Status</th></tr></thead><tbody>${drillRows}</tbody></table></div>
+<p class="note">Target bulanan dihitung dari jumlah drill yang direncanakan pada bulan ${D.bulan} dan sudah memiliki tanggal aktual.</p>`;
+
+/* ---------- 7. Sertifikasi ---------- */
+const cp = D.comp;
+const MON = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
+const fdate = iso => { const [y,m,dd] = iso.split("-"); return `${Number(dd)} ${MON[Number(m)-1]} ${y}`; };
+const isBad = s => s === "Sudah kedaluwarsa";
+const byCo = {};
+cp.flagged.forEach(x => { const k = x.perusahaan || "Tidak diketahui"; byCo[k] = byCo[k] || {bad:0, soon:0}; isBad(x.status) ? byCo[k].bad++ : byCo[k].soon++; });
+const coRows = Object.entries(byCo).sort((a,b) => (b[1].bad+b[1].soon) - (a[1].bad+a[1].soon))
+  .map(([k,o]) => `<tr><td>${esc(k)}</td><td class="r mono" style="color:var(--bad)">${fmt(o.bad,0)}</td><td class="r mono" style="color:var(--warn)">${fmt(o.soon,0)}</td><td class="r mono">${fmt(o.bad+o.soon,0)}</td></tr>`).join("");
+const flagRows = cp.flagged.map(x => {
+  const pel = x.pelatihan[0] === "–" ? `<span class="nd">${NA}</span>` : x.pelatihan.map(esc).join(", ");
+  const dept = [x.departemen, x.jabatan].filter(Boolean).map(esc).join(" · ") || `<span class="nd">${NA}</span>`;
+  return `<tr><td><b>${esc(x.nama)}</b></td><td>${esc(x.perusahaan || "")}</td><td class="w">${dept}</td><td class="w">${pel}</td><td>${fdate(x.jatuhTempo)}</td><td>${pill(x.status, isBad(x.status) ? "bad" : "warn")}</td></tr>`;
+}).join("");
+const c7 = `
+<div class="kpis">
+  ${kpi("Sudah kedaluwarsa", `<span style="color:var(--bad)">${fmt(cp.stat["Sudah kedaluwarsa"]||0,0)}</span>`, "tanggal refresh sudah lewat")}
+  ${kpi("Akan habis", `<span style="color:var(--warn)">${fmt(cp.stat["Akan habis (≤ 90 hari)"]||0,0)}</span>`, "jatuh tempo dalam 90 hari ke depan")}
+  ${kpi("Tanggal jatuh tempo", `<span class="nd" style="font-size:15px">${NA}</span>`, `${fmt(cp.stat["Data jatuh tempo belum tersedia"]||0,0)} karyawan punya catatan pelatihan tanpa tanggal refresh`)}
+</div>
+<div class="lbl-small">Rekap per perusahaan</div>
+<div class="tw"><table><thead><tr><th>Perusahaan</th><th class="r">Sudah kedaluwarsa</th><th class="r">Akan habis</th><th class="r">Total</th></tr></thead><tbody>${coRows}</tbody></table></div>
+<div class="lbl-small">Daftar karyawan (diurutkan dari status paling kritis)</div>
+<div class="tw scroll"><table><thead><tr><th>Nama</th><th>Perusahaan</th><th>Departemen · Jabatan</th><th>Pelatihan tercatat</th><th>Jatuh tempo</th><th>Status</th></tr></thead><tbody>${flagRows}</tbody></table></div>
+<p class="note">Tanggal jatuh tempo diambil dari kolom "Refresh / Pemenuhan Baru" dan diasumsikan sebagai batas berlaku sertifikat, karena file tidak mencantumkan masa berlaku. "Akan habis" berarti jatuh tempo antara ${shortDate(D.today)} dan ${shortDate(D.soon)}. Dari ${fmt(cp.totalComp,0)} karyawan dalam data kompetensi, ${fmt(cp.noDueCount,0)} memiliki catatan pelatihan tetapi belum punya tanggal refresh, sehingga statusnya ditampilkan sebagai "Data belum tersedia".</p>`;
+
+/* ---------- Assemble ---------- */
+document.getElementById("grid").innerHTML = [
+  grp("Ringkasan"),
+  card(1, "Ringkasan Hari Ini", c1, "span2"),
+  grp("Kesiapan alat & unit"),
+  card(2, "Kesiapan Alat Safety Device", c2, "span2"),
+  card(3, "Kesiapan Peralatan & Unit Rescue", c3, "span2"),
+  card(4, "Peralatan Tidak Siap / Perlu Perbaikan", c4, "span2"),
+  grp("SDM, latihan & sertifikasi"),
+  card(5, "Volunteers", c5),
+  card(6, "Drill / Simulasi", c6),
+  card(7, "Pelatihan & Sertifikasi PPGD, Self Evakuasi, dan Kecakapan Teknis", c7, "span2")
+].join("");
+
+document.getElementById("tgl").textContent = D.tanggal;
+
+document.getElementById("foot").textContent = "Sumber: Google Sheets (dibaca langsung saat halaman dibuka). Zona waktu WITA.";
+
+document.getElementById("qrcode").innerHTML = ""; try { new QRCode(document.getElementById("qrcode"), {text: BITLY_URL, width: 88, height: 88, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M}); } catch (e) {}
+
+}
+/* ===== KONFIGURASI: isi ID Google Sheets (atau tempel URL lengkapnya) ===== */
+const CONFIG = {
+  DASHBOARD_ID: "1zBKQvF7qQYHybI0vQt14UVL1LteC60VSeNm344-3OoU",
+  KOMPETENSI_ID: "1zBKQvF7qQYHybI0vQt14UVL1LteC60VSeNm344-3OoU",
+  SHEET: { dop: "DOP ER GMO", prof: "Proficiency Unit & Equipment", sd: "Safety Device GMO", vol: "Volunteer 2026", drill: "Emergency Drill 2026", komp: "GMO 2026" },
+  REFRESH_MENIT: 10
+};
+
+/* ===== Utilitas tanggal & teks ===== */
+const DAYS = ["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];
+const MON_S = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
+const MON_L = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+const pad2 = n => String(n).padStart(2, "0");
+const ymd = (y, m, d) => `${y}-${pad2(m)}-${pad2(d)}`;
+function addDays(s, n) {
+  const [y, m, d] = s.split("-").map(Number);
+  const t = new Date(Date.UTC(y, m - 1, d + n));
+  return ymd(t.getUTCFullYear(), t.getUTCMonth() + 1, t.getUTCDate());
+}
+function shortDate(s) { const [y, m, d] = s.split("-").map(Number); return `${d} ${MON_S[m - 1]} ${y}`; }
+function dateLabel(s) {
+  const [y, m, d] = s.split("-").map(Number);
+  return `${DAYS[new Date(Date.UTC(y, m - 1, d)).getUTCDay()]}, ${shortDate(s)}`;
+}
+function idFrom(x) { const m = String(x).match(/\/d\/([A-Za-z0-9_-]+)/); return m ? m[1] : String(x).trim(); }
+
+/* ===== Pembacaan sheet via gviz (JSONP lewat tag script, tanpa kendala CORS) ===== */
+function gvizJsonp(id, sheet) {
+  return new Promise((resolve, reject) => {
+    const cb = "__gviz_" + Math.random().toString(36).slice(2);
+    const s = document.createElement("script");
+    const finish = () => { delete window[cb]; s.remove(); clearTimeout(timer); };
+    const fail = msg => { finish(); reject(new Error(msg)); };
+    const timer = setTimeout(() => fail(`Sheet "${sheet}" tidak merespons (timeout).`), 20000);
+    window[cb] = json => { finish(); resolve(json); };
+    s.onerror = () => fail(`Sheet "${sheet}" tidak bisa dimuat. Skrip dari Google diblokir di lingkungan ini, atau ID/pengaturan berbagi salah.`);
+    s.src = `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:json;responseHandler:${cb}&sheet=${encodeURIComponent(sheet)}`;
+    document.head.appendChild(s);
+  });
+}
+async function fetchSheet(idRaw, sheet) {
+  const json = await gvizJsonp(idFrom(idRaw), sheet);
+  if (json.status === "error") throw new Error(`Sheet "${sheet}": ${(json.errors && json.errors[0] && (json.errors[0].detailed_message || json.errors[0].message)) || "tidak bisa dibaca"}. Periksa nama sheet dan pengaturan berbagi.`);
+  const n = json.table.cols.length;
+  const hasLabel = json.table.cols.some(c => c.label && c.label.trim());
+  const rows = json.table.rows.map(r => Array.from({ length: n }, (_, i) => cellVal(r.c && r.c[i])));
+  return (hasLabel ? rows : rows.slice(1)).filter(r => r.some(v => v !== null));
+}
+
+function cellVal(c) {
+  if (!c) return null;
+  const v = c.v;
+  if (v === null || v === undefined || v === "") return c.f ? (String(c.f).trim() || null) : null;
+  if (typeof v === "string" && v.startsWith("Date(")) {
+    const p = v.slice(5, -1).split(",").map(Number);
+    return ymd(p[0], p[1] + 1, p[2]); // gviz memakai bulan berbasis 0
+  }
+  if (typeof v === "string") return v.trim() || null;
+  return v;
+}
+/* ===== Perhitungan (urutan dan aturan sama dengan versi Python) ===== */
+const clean = v => (typeof v === "string" ? (v.trim() || null) : (v ?? null));
+function parseDate(v) {
+  if (v === null || v === undefined) return null;
+  if (typeof v === "string") {
+    if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return v;
+    const m = v.match(/^\s*(\d{1,2})[\/-](\d{1,2})[\/-](\d{2,4})\s*$/);
+    if (m) {
+      let y = +m[3]; if (y < 100) y += 2000;
+      const mo = +m[2], d = +m[1];
+      if (mo >= 1 && mo <= 12 && d >= 1 && new Date(Date.UTC(y, mo - 1, d)).getUTCDate() === d) return ymd(y, mo, d);
+    }
+  }
+  return null;
+}
+const titleSt = s => s ? s.toLowerCase().replace(/\b\w/g, c => c.toUpperCase()).replace(/\bGmo\b/g, "GMO") : "Tidak diketahui";
+const TC = [3, 4, 5, 6, 7, 8];                   // kolom penanda pelatihan di sheet volunteer
+const TR = { 5: "PPGD", 6: "Self Evakuasi Unit", 7: "Self Evakuasi Ketinggian", 8: "Self Evakuasi Air/Lumpur", 9: "Kecakapan Teknis" };
+const trainings = r => Object.keys(TR).map(Number).filter(i => clean(r[i]) !== null)
+  .map(i => ({ lab: TR[i], date: parseDate(r[i]), raw: clean(r[i]) }));
+const nname = s => (s || "").toUpperCase().replace(/\s+/g, " ").replace(/[^A-Z ]/g, "").trim();
+const SD_ORDER = [["Portable Extinguisher (APAR)","APAR"],["Wheel Extinguisher (APAB)","APAB"],["Smoke Detector","Smoke detector"],["Thermal Detector","Thermal detector"],["Hydrant","Hydrant"],["Diesel Fire Pump","Diesel fire pump"],["Electric Fire Pump","Elektrik fire pump"],["Jockey Fire Pump","Jockey fire pump"],["Kotak P3K","Kotak P3K"],["Ring Buoy","Ringbuoy"],["Fixed Gas Detector","Fixed gas detector"],["Fire Alarm","Fire alarm"],["Foam System (Foam Trolley)","Foam system"]];
+
+function nowWita() {
+  const w = new Date(Date.now() + 8 * 3600000);
+  const today = ymd(w.getUTCFullYear(), w.getUTCMonth() + 1, w.getUTCDate());
+  return { today, prev: addDays(today, -1), soon: addDays(today, 90), bulan: MON_L[w.getUTCMonth()], w };
+}
+
+function compute(S) {
+  const { today: TODAY, prev: PREV, soon: SOON, bulan, w } = nowWita();
+  const pct1 = (a, b) => (b ? Math.round(a / b * 1000) / 10 : null);
+
+  // 1. DOP
+  const dopDate = r => { const mi = MON_L.indexOf(clean(r[2])); return (r[1] && mi >= 0 && r[3]) ? ymd(+r[3], mi + 1, +r[1]) : parseDate(r[4]); };
+  const dopAll = S.dop.filter(r => clean(r[6]));
+  const t = dopAll.filter(r => dopDate(r) === TODAY);
+  const p = dopAll.filter(r => dopDate(r) === PREV);
+  const cnt = v => t.filter(r => clean(r[7]) === v).length;
+  const dop = {
+    total: t.length, terlaksana: cnt("Terlaksana"), catatan: cnt("Terlaksana dengan Catatan"), tidak: cnt("Tidak Terlaksana"),
+    belum: t.filter(r => !clean(r[7])).length, prevTotal: p.length,
+    prevTidak: p.filter(r => clean(r[7]) === "Tidak Terlaksana").map(r => ({
+      station: clean(r[0]), kegiatan: clean(r[6]).split(/\s+/).join(" "), alasan: clean(r[10]) || "Alasan belum diisi" }))
+  };
+  const p2h = p.filter(r => clean(r[6]).includes("P2H") && clean(r[9]))
+    .map(r => clean(r[9]).replace(/\n/g, "; ").split(/\s+/).join(" "));
+
+  // 2. Proficiency
+  const pr = S.prof;
+  const units = pr.filter(r => clean(r[2]) === "Unit").map(r => ({
+    name: clean(r[3]), reg: clean(r[4]), station: titleSt(clean(r[0])), status: clean(r[8]) || "Belum ada data" }));
+  const eq = pr.filter(r => clean(r[2]) !== "Unit");
+  const G = eq.filter(r => clean(r[8]) === "Good").length, NG = eq.filter(r => clean(r[8]) === "Not Good").length;
+  const eqObj = { pct: pct1(G, G + NG), good: G, ng: NG, nodata: eq.length - G - NG, total: eq.length,
+    units, unitGood: units.filter(u => u.status === "Good").length };
+  const catObj = (name, rr) => {
+    const g = rr.filter(r => clean(r[8]) === "Good").length, n = rr.filter(r => clean(r[8]) === "Not Good").length;
+    return { name, good: g, ng: n, nd: rr.length - g - n, total: rr.length, pct: pct1(g, g + n) };
+  };
+  const cats = [catObj("Unit (LV Support, Rescue Car, Fire Truck, Ambulans)", pr.filter(r => clean(r[2]) === "Unit"))];
+  ["Extrication","Fire","Mountaineering","Hazmat","Medical","Water","Tools"]
+    .forEach(c => cats.push(catObj(c, eq.filter(r => clean(r[2]) === c + " Equipment"))));
+  const tidak = eq.filter(r => clean(r[8]) === "Not Good" || clean(r[10]) || /dipinjam/i.test(clean(r[9]) || ""))
+    .map(r => ({ station: clean(r[0]) ? titleSt(clean(r[0])) : "Tidak diketahui", kategori: (clean(r[2]) || "").replace(" Equipment", ""),
+      jenis: clean(r[3]) || "-", ket: clean(r[9]) || null, status: clean(r[10]) || null, kesiapan: clean(r[8]) || null }));
+
+  // 3. Safety device
+  const sdTotal = S.sd.length;
+  const sdItems = SD_ORDER.map(([key, label]) => {
+    const rr = S.sd.filter(r => clean(r[0]) === key);
+    const c = rr.filter(r => clean(r[10]) === "CLOSE").length, o = rr.filter(r => clean(r[10]) === "OPEN").length, na = rr.filter(r => clean(r[10]) === "NA").length;
+    return { jenis: label, n: rr.length, pct: pct1(rr.length, sdTotal),
+      areas: [...new Set(rr.map(r => clean(r[4]) || "Tidak diketahui"))].sort().join(", "),
+      tanpa: rr.filter(r => clean(r[8]) === "Tidak ada temuan").length,
+      ada: rr.filter(r => ["Corrective", "Impairment"].includes(clean(r[8]))).length,
+      close: c, open: o, na, siap: pct1(c, rr.length) };
+  });
+  const sd = { total: sdTotal, close: sdItems.reduce((a, i) => a + i.close, 0), open: sdItems.reduce((a, i) => a + i.open, 0),
+    na: sdItems.reduce((a, i) => a + i.na, 0), items: sdItems };
+
+  // 4. Volunteer
+  const vol = S.vol.filter(r => clean(r[0]));
+  const certified = vol.filter(r => TC.some(i => clean(r[i]) === "Certified"))
+    .map(r => ({ name: clean(r[0]), company: clean(r[1]) || "-" }));
+  const trainedNotCertRows = vol.filter(r => TC.some(i => clean(r[i]) && clean(r[i]) !== "Certified"));
+  const volD = { total: vol.length, certified, trainedNotCert: trainedNotCertRows.length,
+    noMark: vol.length - certified.length - trainedNotCertRows.length };
+
+  // 5. Data kompetensi (jatuh tempo = kolom Refresh / Pemenuhan Baru)
+  const comp = S.komp.filter(r => clean(r[0]));
+  const KED = "Sudah kedaluwarsa", SOONL = "Akan habis (≤ 90 hari)", NODUE = "Data jatuh tempo belum tersedia", OK = "Berlaku";
+  const stat = {}, flagged = [];
+  let noDue = 0;
+  comp.forEach(r => {
+    const ref = parseDate(r[10]), tr = trainings(r);
+    if (!tr.length && !ref) return;
+    if (!ref) { stat[NODUE] = (stat[NODUE] || 0) + 1; noDue++; return; }
+    const s = ref < TODAY ? KED : ref <= SOON ? SOONL : OK;
+    stat[s] = (stat[s] || 0) + 1;
+    if (s !== OK) flagged.push({ nama: clean(r[0]), perusahaan: clean(r[1]), departemen: clean(r[2]), jabatan: clean(r[4]),
+      pelatihan: tr.length ? tr.map(x => x.lab) : ["–"], jatuhTempo: ref, status: s });
+  });
+  flagged.sort((a, b) => ((a.status === KED ? 0 : 1) - (b.status === KED ? 0 : 1))
+    || (a.jatuhTempo < b.jatuhTempo ? -1 : a.jatuhTempo > b.jatuhTempo ? 1 : 0)
+    || a.nama.localeCompare(b.nama));
+
+  // Pencocokan volunteer dengan data kompetensi (berdasarkan nama)
+  const byName = {};
+  comp.forEach(r => { const k = nname(clean(r[0])); (byName[k] = byName[k] || []).push(r); });
+  let vmMatched = 0, vmNo = 0; const vmList = [];
+  vol.forEach(v => {
+    const cands = byName[nname(clean(v[0]))] || [];
+    if (!cands.length) { vmNo++; return; }
+    vmMatched++;
+    const cert = TC.some(i => clean(v[i]) === "Certified");
+    const tr = trainings(cands[0]);
+    if (tr.length && !cert) vmList.push({ nama: clean(v[0]), perusahaan: clean(v[1]) || "-",
+      pelatihan: tr.map(x => x.lab + (x.date ? " " + shortDate(x.date) : " (" + x.raw + ")")) });
+  });
+
+  // 6. Drill
+  const dr = S.drill.filter(r => clean(r[0]));
+  const octp = dr.filter(r => clean(r[4]) === bulan);
+  const drill = { total: dr.length, done: dr.filter(r => clean(r[5])).length, octPlan: octp.length,
+    octDone: octp.filter(r => clean(r[5])).length,
+    rows: dr.map(r => ({ perusahaan: clean(r[0]), dept: clean(r[1]), jenis: clean(r[2]), program: clean(r[3]),
+      rencana: clean(r[4]), aktual: clean(r[5]), status: clean(r[6]), zona: clean(r[7]) })) };
+
+  return {
+    tanggal: dateLabel(TODAY), tanggalPrev: dateLabel(PREV), today: TODAY, soon: SOON, bulan,
+    dop, p2h, eq: eqObj, cats, tidak, sd, vol: volD,
+    volMerge: { matched: vmMatched, noMatch: vmNo, list: vmList },
+    drill, comp: { stat, flagged, totalComp: comp.length, noDueCount: noDue }
+  };
+}
+
+/* ===== Muat data, render, dan muat ulang berkala ===== */
+const gvizUrl = (id, sheet) => `https://docs.google.com/spreadsheets/d/${idFrom(id)}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheet)}`;
+function showDiagnostics(diag) {
+  const rows = diag.map(d => `<tr><td><b>${esc(d.name)}</b></td>
+    <td>${d.ok ? pill("OK", "ok") : pill("GAGAL", "bad")}</td>
+    <td class="w">${esc(d.msg)}</td>
+    <td><a href="${esc(d.url)}" target="_blank" rel="noopener">buka tes</a></td></tr>`).join("");
+  document.getElementById("grid").innerHTML = `<section class="card span2">
+    <div class="ch"><span class="num">!</span><h2>Data belum bisa dimuat</h2></div>
+    <p class="note" style="margin-top:0">Status per sheet. Jika "buka tes" menampilkan teks JSON berisi data di browser yang sama, sheet sudah benar dan halaman ini diblokir oleh lingkungan tempat file dibuka (misalnya pratinjau di chat). Solusinya: buka file langsung di browser (klik dua kali pada file HTML), atau hosting di layanan statis. Jika "buka tes" menampilkan pesan error atau halaman login, periksa ID dan pengaturan berbagi.</p>
+    <div class="tw"><table><thead><tr><th>Sheet</th><th>Status</th><th>Keterangan</th><th>Tes manual</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <p style="margin-top:14px"><button onclick="loadAll()" style="font:600 13px Inter,system-ui,sans-serif;padding:8px 14px;border:0;border-radius:8px;background:var(--acc);color:var(--accink);cursor:pointer">Coba lagi</button></p>
+  </section>`;
+}
+async function loadAll() {
+  const jam = document.getElementById("jam");
+  const jobs = [
+    [CONFIG.DASHBOARD_ID, CONFIG.SHEET.dop], [CONFIG.DASHBOARD_ID, CONFIG.SHEET.prof],
+    [CONFIG.DASHBOARD_ID, CONFIG.SHEET.sd], [CONFIG.DASHBOARD_ID, CONFIG.SHEET.vol],
+    [CONFIG.DASHBOARD_ID, CONFIG.SHEET.drill], [CONFIG.KOMPETENSI_ID, CONFIG.SHEET.komp]
+  ];
+  const res = await Promise.allSettled(jobs.map(([id, name]) => fetchSheet(id, name)));
+  const diag = jobs.map(([id, name], i) => ({ name, ok: res[i].status === "fulfilled",
+    msg: res[i].status === "fulfilled" ? `${res[i].value.length} baris terbaca` : res[i].reason.message,
+    url: gvizUrl(id, name) }));
+  if (res.some(r => r.status === "rejected")) {
+    showDiagnostics(diag);
+    jam.textContent = "gagal memuat data";
+    return;
+  }
+  const [dop, prof, sd, vol, drill, komp] = res.map(r => r.value);
+  D = compute({ dop, prof, sd, vol, drill, komp });
+  render();
+  document.getElementById("slideBtn").disabled = false;
+  const t = new Date(Date.now() + 8 * 3600000);
+  jam.textContent = `diperbarui ${pad2(t.getUTCHours())}:${pad2(t.getUTCMinutes())} WITA · otomatis tiap ${CONFIG.REFRESH_MENIT} menit`;
+}
+loadAll();
+setInterval(loadAll, CONFIG.REFRESH_MENIT * 60000);
+
+/* ===== Pilihan mode terang / gelap ===== */
+function toggleTheme() {
+  const r = document.documentElement;
+  const toLight = r.getAttribute("data-theme") !== "light";
+  r.setAttribute("data-theme", toLight ? "light" : "dark");
+  document.getElementById("themeBtn").textContent = toLight ? "☾ Mode gelap" : "☀ Mode terang";
+}
+
+/* ===== Unduh ringkasan sebagai slide landscape (PNG 1920x1080) ===== */
+function roundRectPath(g, x, y, w, h, r) {
+  g.beginPath();
+  if (g.roundRect) g.roundRect(x, y, w, h, r); else g.rect(x, y, w, h);
+}
+async function downloadSlide() {
+  if (!D) return;
+  const btn = document.getElementById("slideBtn");
+  btn.disabled = true; btn.textContent = "Membuat gambar…";
+  try {
+    try { await Promise.all([document.fonts.load('700 72px Inter'), document.fonts.load('600 26px Inter'), document.fonts.load('500 80px "IBM Plex Mono"')]); } catch (e) {}
+    const W = 1920, H = 1080, PAD = 96;
+    const c = document.createElement("canvas"); c.width = W; c.height = H;
+    const g = c.getContext("2d");
+    const text = (str, x, y, font, color, align = "left") => { g.font = font; g.fillStyle = color; g.textAlign = align; g.textBaseline = "alphabetic"; g.fillText(str, x, y); };
+    const fitText = (str, x, y, maxW, weight, family, size, color) => {
+      let sz = size;
+      do { g.font = `${weight} ${sz}px ${family}`; if (g.measureText(str).width <= maxW || sz <= 16) break; sz -= 1; } while (true);
+      text(str, x, y, `${weight} ${sz}px ${family}`, color);
+    };
+    // latar dan aksen
+    g.fillStyle = "#ffffff"; g.fillRect(0, 0, W, H);
+    g.fillStyle = "#e10600"; g.fillRect(0, 0, W, 12);
+    // header
+    text("EMERGENCY RESPONSE GROUP · SITE GMO", PAD, 120, '700 24px Inter, system-ui, sans-serif', "#e10600");
+    text("Daily Report — ERG Site GMO", PAD, 200, '700 64px Inter, system-ui, sans-serif', "#0d0d0d");
+    text("Emergency Response & Safety Service Departemen", PAD, 248, '400 28px Inter, system-ui, sans-serif', "#6b6b6b");
+    text(D.tanggal, W - PAD, 170, '700 28px Inter, system-ui, sans-serif', "#0d0d0d", "right");
+    // kartu ringkasan
+    const sdPct = D.sd.total ? Math.round(D.sd.close / D.sd.total * 1000) / 10 : null;
+    const drillPct = D.drill.octPlan ? Math.round(D.drill.octDone / D.drill.octPlan * 100) : null;
+    const kad = D.comp.stat["Sudah kedaluwarsa"] || 0, soon = D.comp.stat["Akan habis (≤ 90 hari)"] || 0;
+    const tiles = [
+      { lbl: "Kesiapan peralatan", v: pct(D.eq.pct), c: "#0d0d0d", s: [`${fmt(D.eq.good, 0)} Good dari ${fmt(D.eq.good + D.eq.ng, 0)} item ber-data`, `${fmt(D.eq.nodata, 0)} item belum ada data`] },
+      { lbl: "Kesiapan safety device", v: pct(sdPct), c: "#0d0d0d", s: [`${fmt(D.sd.close, 0)} Close dari ${fmt(D.sd.total, 0)} unit`, `${fmt(D.sd.open, 0)} Open · ${fmt(D.sd.na, 0)} NA`] },
+      { lbl: "DOP hari ini", v: `${fmt(D.dop.terlaksana, 0)} / ${fmt(D.dop.total, 0)}`, c: "#0d0d0d", s: ["kegiatan terlaksana hari ini", `${fmt(D.dop.tidak, 0)} tidak terlaksana · ${fmt(D.dop.belum, 0)} belum diverifikasi`] },
+      { lbl: "Target drill " + D.bulan, v: pct(drillPct, 0), c: "#0d0d0d", s: [`${fmt(D.drill.octDone, 0)} dari ${fmt(D.drill.octPlan, 0)} drill terencana bulan ${D.bulan}`, `${fmt(D.drill.done, 0)} dari ${fmt(D.drill.total, 0)} drill tahun ini selesai`] },
+      { lbl: "Sertifikat kedaluwarsa", v: fmt(kad, 0), c: "#e10600", s: ["karyawan, tanggal refresh sudah lewat"] },
+      { lbl: "Akan habis dalam 90 hari", v: fmt(soon, 0), c: "#0d0d0d", s: [`karyawan jatuh tempo sampai ${shortDate(D.soon)}`] }
+    ];
+    const TW = (W - 2 * PAD - 48) / 3, TH = 250, TY = [300, 574];
+    tiles.forEach((tl, i) => {
+      const x = PAD + (i % 3) * (TW + 24), y = TY[Math.floor(i / 3)];
+      g.fillStyle = "#f5f5f5"; g.strokeStyle = "#e3e3e3"; g.lineWidth = 2;
+      roundRectPath(g, x, y, TW, TH, 16); g.fill(); g.stroke();
+      text(tl.lbl, x + 32, y + 56, '600 26px Inter, system-ui, sans-serif', "#6b6b6b");
+      text(tl.v, x + 32, y + 150, '500 80px "IBM Plex Mono", monospace', tl.c);
+      tl.s.forEach((line, k) => fitText(line, x + 32, y + 200 + k * 30, TW - 64, 400, "Inter, system-ui, sans-serif", 24, "#6b6b6b"));
+    });
+    // band tindak lanjut
+    g.fillStyle = "#0d0d0d"; roundRectPath(g, PAD, 860, W - 2 * PAD, 110, 16); g.fill();
+    fitText(`Perlu tindak lanjut: ${fmt(D.tidak.length, 0)} peralatan tidak siap · ${fmt(D.volMerge.list.length, 0)} volunteer belum certified · ${fmt(D.dop.prevTidak.length, 0)} DOP ${D.tanggalPrev.split(", ")[1]} tidak terlaksana`,
+      PAD + 32, 926, W - 2 * PAD - 64, 700, "Inter, system-ui, sans-serif", 28, "#ffffff");
+    // sumber
+    fitText(`Sumber: Google Sheets (dibaca langsung) · ${document.getElementById("jam").textContent || ""} · Jatuh tempo sertifikat dari kolom Refresh / Pemenuhan Baru`, PAD, 1020, W - 2 * PAD, 400, "Inter, system-ui, sans-serif", 24, "#6b6b6b");
+
+    const blob = await new Promise(res => c.toBlob(res, "image/png"));
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `Ringkasan_ERG_GMO_${D.today}.png`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  } finally {
+    btn.disabled = false; btn.textContent = "⬇ Unduh slide PNG";
+  }
+}
+
+</script>
+</body>
+</html>
